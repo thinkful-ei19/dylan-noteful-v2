@@ -5,6 +5,8 @@ const express = require('express');
 // Create an router instance (aka "mini-app")
 const router = express.Router();
 
+const knex = require('../knex.js');
+
 // TEMP: Simple In-Memory Database
 /* 
 const data = require('../db/notes');
@@ -16,13 +18,19 @@ const notes = simDB.initialize(data);
 /* ========== GET/READ ALL NOTES ========== */
 router.get('/notes', (req, res, next) => {
   const { searchTerm } = req.query;
-  /* 
-  notes.filter(searchTerm)
+
+  knex
+    .select('id', 'title', 'content')
+    .from('notes')
+    .where(function() {
+      if (searchTerm) {
+        this.where('title', 'like', `%${searchTerm}%`);
+      }
+    })
     .then(list => {
       res.json(list);
     })
-    .catch(err => next(err)); 
-  */
+    .catch(err => next(err));
 });
 
 /* ========== GET/READ SINGLE NOTES ========== */
