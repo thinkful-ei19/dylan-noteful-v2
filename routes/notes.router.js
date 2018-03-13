@@ -99,7 +99,7 @@ router.put('/notes/:id', (req, res, next) => {
   knex('notes')
     .update(updateObj)
     .where('id', noteId)
-    .returning(['id', ])
+    .returning(['id', 'title', 'content'])
     .then(item => {
       if (item) {
         res.json(item);
