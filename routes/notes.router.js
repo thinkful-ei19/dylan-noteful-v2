@@ -84,8 +84,6 @@ router.put('/notes/:id', (req, res, next) => {
     }
   });
 
-  console.log(updateObj);
-
   /***** Never trust users - validate input *****/
   if (!updateObj.title) {
     const err = new Error('Missing `title` in request body');
@@ -115,10 +113,8 @@ router.put('/notes/:id', (req, res, next) => {
         .where('notes.id', noteId);
     })
     .then(result => {
-      // result ? res.json(result) : next();
       if (result) {
         const hydrated = hydrateNotes(result);
-        // res.json(hydrated);
         res.location(`${req.originalUrl}/${hydrated.id}`).status(201).json(hydrated);
       } else {
         next();
@@ -142,16 +138,13 @@ router.post('/notes', (req, res, next) => {
   }
 
   let noteId;
-  // Insert new note into notes table
   knex.insert(newItem).into('notes').returning('id')
     .then(([id]) => {
-    // Insert related tags into notes_tags table
       noteId = id;
       const tagsInsert = tags.map(tagId => ({ note_id: noteId, tag_id: tagId }));
       return knex.insert(tagsInsert).into('notes_tags');
     })
     .then(() => {
-    // Select the new note and leftJoin on folders and tags
       return knex.select('notes.id', 'title', 'content',
         'folders.id as folder_id', 'folders.name as folderName',
         'tags.id as tagId', 'tags.name as tagName')
@@ -163,9 +156,7 @@ router.post('/notes', (req, res, next) => {
     })
     .then(result => {
       if (result) {
-      // Hydrate the results
         const hydrated = hydrateNotes(result);
-        // Respond with a location header, a 201 status and a note object
         res.location(`${req.originalUrl}/${hydrated.id}`).status(201).json(hydrated);
       } else {
         next();
