@@ -1,4 +1,4 @@
-'use stritct';
+'use strict';
 
 function hydrateNotes(input) {
   const hydrated = [], lookup = {};
