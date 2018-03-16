@@ -121,8 +121,7 @@ const noteful = (function () {
       const noteId = getNoteIdFromElement(event.currentTarget);
 
       api.details(`/v2/notes/${noteId}`)
-        .then(([response]) => {
-          console.log(response);
+        .then((response) => {
           store.currentNote = response;
           render();
         });

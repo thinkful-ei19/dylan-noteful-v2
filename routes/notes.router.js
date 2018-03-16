@@ -1,14 +1,10 @@
 'use strict';
 
 const express = require('express');
-
-// Create an router instance (aka "mini-app")
 const router = express.Router();
-
 const knex = require('../knex.js');
 const hydrateNotes = require('../utils/hydrateNotes');
 
-// Get All (and search by query)
 /* ========== GET/READ ALL NOTES ========== */
 router.get('/notes', (req, res, next) => {
   const { searchTerm, folderId, tagId } = req.query;
@@ -59,8 +55,9 @@ router.get('/notes/:id', (req, res, next) => {
     .where('notes.id', noteId)
     .then(result => {
       if (result) {
-        const hyrdated = hydrateNotes(result);
-        res.json(hyrdated);
+        const [hydrated] = hydrateNotes(result);
+        console.log(hydrated);
+        res.json(hydrated);
       } else {
         next();
       }
@@ -114,8 +111,9 @@ router.put('/notes/:id', (req, res, next) => {
     })
     .then(result => {
       if (result) {
-        const hydrated = hydrateNotes(result);
-        res.location(`${req.originalUrl}/${hydrated.id}`).status(201).json(hydrated);
+        const [hydrated] = hydrateNotes(result);
+        // res.location(`${req.originalUrl}/${hydrated.id}`).status(201).json(hydrated);
+        res.json(hydrated).status(200);
       } else {
         next();
       }
@@ -156,7 +154,7 @@ router.post('/notes', (req, res, next) => {
     })
     .then(result => {
       if (result) {
-        const hydrated = hydrateNotes(result);
+        const [hydrated] = hydrateNotes(result);
         res.location(`${req.originalUrl}/${hydrated.id}`).status(201).json(hydrated);
       } else {
         next();
